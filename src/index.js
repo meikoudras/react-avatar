@@ -48,7 +48,8 @@ export default class Avatar extends React.Component {
         style: PropTypes.object,
         size: PropTypes.number,
         textSizeRatio: PropTypes.number,
-        unstyled: PropTypes.bool
+        unstyled: PropTypes.bool,
+        asBackground: PropTypes.bool
     }
 
     static defaultProps = {
@@ -68,7 +69,8 @@ export default class Avatar extends React.Component {
         size: 100,
         style: null,
         textSizeRatio: 3,
-        unstyled: false
+        unstyled: false,
+        asBackground: false
     }
 
     constructor(props) {
@@ -212,7 +214,35 @@ export default class Avatar extends React.Component {
         );
     }
 
-    _renderAsText() {
+  _renderAsBackground() {
+      const size = this.props.size;
+      const round = this.props.round;
+      const alt = this.props.name || this.props.value;
+      const imageStyle = this.props.unstyled ? null : {
+          maxWidth: '100%',
+          width: size,
+          height: size,
+          borderRadius: (round ? 500 : 0),
+          backgroundImage: `url(${this.state.src})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center'
+      };
+      return (
+          <div
+              style={imageStyle}
+              alt={alt}>
+              <img width={1}
+                  height={1}
+                  style={{visibility: 'hidden'}}
+                  src={this.state.src}
+                  alt={alt}
+                  onError={this.fetch} />
+          </div>
+    );
+  }
+
+
+  _renderAsText() {
         const size = this.props.size;
         const textSizeRatio = this.props.textSizeRatio;
         const round = this.props.round;
@@ -236,6 +266,7 @@ export default class Avatar extends React.Component {
 
     render() {
         const size = this.props.size;
+        const asBackground = this.props.asBackground;
         const hostStyle = this.props.unstyled ? null : {
             display: 'inline-block',
             width: size,
@@ -246,7 +277,7 @@ export default class Avatar extends React.Component {
         return (
             <div className={this.props.className}
                 style={hostStyle}>
-                {this.state.src ? this._renderAsImage() : this._renderAsText()}
+                {this.state.src ? asBackground ? this._renderAsBackground() : this._renderAsImage() : this._renderAsText()}
             </div>
         );
     }
